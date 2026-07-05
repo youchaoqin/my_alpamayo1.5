@@ -15,6 +15,7 @@
 
 """Base Reasoning VLA model implementation for Alpamayo 1.5 release."""
 
+import os
 import copy
 import logging
 from typing import Any
@@ -227,7 +228,14 @@ class ReasoningVLAConfig(PretrainedConfig):
         kwargs["attn_implementation"] = attn_implementation
         super().__init__(**kwargs)
 
+        local_model_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "models")
+        vlm_name_or_path =  os.path.join(local_model_dir, vlm_name_or_path) \
+            if os.path.isdir(os.path.join(local_model_dir, vlm_name_or_path)) \
+            else vlm_name_or_path
+
         self.vlm_name_or_path = vlm_name_or_path
+        print("## vlm name or path: ", self.vlm_name_or_path)
         self.vlm_backend = vlm_backend.lower()
         self.model_dtype = model_dtype
         self.attn_implementation = attn_implementation

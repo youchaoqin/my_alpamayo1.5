@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from transformers import AutoProcessor, AutoTokenizer
 
 from typing import Any
@@ -23,6 +24,12 @@ import collections.abc
 MIN_PIXELS = 163840
 MAX_PIXELS = 196608
 BASE_PROCESSOR_NAME = "Qwen/Qwen3-VL-2B-Instruct"
+MODEL_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "models")
+
+BASE_PROCESSOR_NAME = os.path.join(MODEL_BASE_DIR, BASE_PROCESSOR_NAME) \
+    if os.path.isdir(os.path.join(MODEL_BASE_DIR, BASE_PROCESSOR_NAME)) \
+    else BASE_PROCESSOR_NAME
+
 
 CAMERA_DISPLAY_NAMES = {
     0: "Front left camera",

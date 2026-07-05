@@ -18,6 +18,7 @@
 Loads a dataset, runs inference, and computes the minADE.
 """
 
+import os
 import numpy as np
 import torch
 
@@ -25,18 +26,36 @@ from alpamayo1_5 import helper
 from alpamayo1_5.load_physical_aiavdataset import load_physical_aiavdataset
 from alpamayo1_5.models.alpamayo1_5 import Alpamayo1_5
 
+import physical_ai_av
+
 
 def main() -> None:
     """Run inference on an example clip and report minADE."""
+    model_base_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", "models")
+    dataset_base_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", "datasets")
+    av1_5_10B_model_dir = os.path.join(model_base_dir, "nvidia/Alpamayo-1.5-10B")
+    av1_5_data_dir = os.path.join(dataset_base_dir, "nvidia/PhysicalAI-Autonomous-Vehicles")
+
     clip_id = "030c760c-ae38-49aa-9ad8-f5650a545d26"
     print(f"Loading dataset for clip_id: {clip_id}...")
-    data = load_physical_aiavdataset(clip_id, t0_us=5_100_000)
+    data = load_physical_aiavdataset(
+        clip_id, 
+        t0_us=5_100_000,
+        avdi=physical_ai_av.PhysicalAIAVDatasetInterface(
+            cache_dir=av1_5_data_dir if os.path.isdir(av1_5_data_dir) else None, 
+            local_dir=av1_5_data_dir if os.path.isdir(av1_5_data_dir) else None,)
+    )
     print("Dataset loaded.")
     messages = helper.create_message(
         frames=data["image_frames"].flatten(0, 1), camera_indices=data["camera_indices"]
     )
 
-    model = Alpamayo1_5.from_pretrained("nvidia/Alpamayo-1.5-10B", dtype=torch.bfloat16).to("cuda")
+    model = Alpamayo1_5.from_pretrained(
+        av1_5_10B_model_dir if os.path.isdir(av1_5_10B_model_dir) else \
+            "nvidia/Alpamayo-1.5-10B", 
+        dtype=torch.bfloat16).to("cuda")
     processor = helper.get_processor(model.tokenizer)
 
     inputs = processor.apply_chat_template(
