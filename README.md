@@ -226,7 +226,8 @@ No. The model weights are released under a **non-commercial license**. This rele
 
 ## License
 
-Apache License 2.0 - see [LICENSE](./LICENSE) for details.
+- **Inference code**: Apache License 2.0 - see [LICENSE](./LICENSE) for details.
+- **Model weights**: Non-commercial license - see the [HuggingFace Model Card](https://huggingface.co/nvidia/Alpamayo-1.5-10B) for details.
 
 ## Disclaimer
 
